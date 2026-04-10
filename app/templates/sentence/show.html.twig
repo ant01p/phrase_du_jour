@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}La phrase du jour{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+
+    <h2 class="text-center fw-bold mb-4">La phrase du jour</h2>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+
+            <div class="card border-dark">
+                <div class="card-header bg-{{ sentence.category.color }} text-end">
+                    <span class="badge rounded-pill bg-{{ sentence.category.color }} ">
+                        {{ sentence.category.name }}
+                    </span>
+                </div>
+
+                <div class="card-body bg-{{ sentence.category.color }}">
+                    <p class="fw-bold mb-2">
+                        {{ sentence.createdAt|date('d/m/Y') }}
+                    </p>
+
+                    <p class="mb-0 small">
+                        {{ sentence.content }}
+                    </p>
+                </div>
+
+                <div class="card-footer bg-{{ sentence.category.color }} text-end py-1">
+                    👍 {{ sentence.likes }}
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+{% endblock %}

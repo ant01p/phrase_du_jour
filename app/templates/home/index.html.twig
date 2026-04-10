@@ -8,13 +8,19 @@
     .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
 </style>
 
-<div class="example-wrapper">
+<div>
+
+    <h1 class="text-center fw-bold mb-4">Les phrases du jour</h1>
 
     <table class="table table-hover">
         <tbody>
             {% for sentence in sentences %}
                 <tr class="table-active">
-                    <th scope="row"> la phrase du {{ sentence.createdAt|date('d/m/Y') }}👁️</th>
+                    <th scope="row">
+                        <a href="{{ path('app_sentence_show', {id: sentence.id}) }}" class="text-decoration-none">
+                            la phrase du {{ sentence.createdAt|date('d/m/Y') }}👁️
+                        </a>
+                    </th>
                     <td> 
                         <span class="badge rounded-pill text-bg-{{ sentence.category.color }}">
                             {{ sentence.category.name }}
