@@ -9,6 +9,26 @@
 </style>
 
 <div class="example-wrapper">
-    
+
+    <table class="table table-hover">
+        <tbody>
+            {% for sentence in sentences %}
+                <tr class="table-active">
+                    <th scope="row"> la phrase du {{ sentence.createdAt|date('d/m/Y') }}👁️</th>
+                    <td> 
+                        <span class="badge rounded-pill text-bg-{{ sentence.category.color }}">
+                            {{ sentence.category.name }}
+                        </span>
+                    </td>
+                    <td>👍 {{ sentence.likes }}</td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="3">Aucune phrase trouvée</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
 </div>
 {% endblock %}
