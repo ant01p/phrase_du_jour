@@ -12,7 +12,7 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class SentenceController extends AbstractController
 {
-    #[Route('/home', name: 'app_home')]
+    #[Route('/', name: 'app_home')]
     public function index(SentenceRepository $sentences): Response
     {
         $sentences = $sentences->findBy([], ['createdAt' => 'DESC']);

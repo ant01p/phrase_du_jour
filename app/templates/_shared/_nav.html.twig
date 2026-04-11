@@ -11,12 +11,18 @@
                             <span class="visually-hidden">(current)</span>
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ path('app_login') }}">Connexion</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ path('app_register') }}">Enregistrement</a>
-                    </li>
+                    {% if app.user %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ path('app_logout') }}">Déconnexion</a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ path('app_login') }}">Connexion</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ path('app_register') }}">Enregistrement</a>
+                        </li>
+                    {% endif %}
                     
                 </ul>
             </div>
