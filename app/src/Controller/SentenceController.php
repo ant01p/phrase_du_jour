@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use Doctrine\ORM\EntityManagerInterface;
+use App\Entity\Sentence;
 use App\Repository\SentenceRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -10,9 +12,9 @@ use Symfony\Component\Routing\Attribute\Route;
 final class SentenceController extends AbstractController
 {
     #[Route('/home', name: 'app_home')]
-    public function index(SentenceRepository $sentenceRepository): Response
+    public function index(SentenceRepository $sentences): Response
     {
-        $sentences = $sentenceRepository->findBy([], ['createdAt' => 'DESC']);
+        $sentences = $sentences->findBy([], ['createdAt' => 'DESC']);
         
         return $this->render('home/index.html.twig', [
             'controller_name' => 'SentenceController',
@@ -21,11 +23,24 @@ final class SentenceController extends AbstractController
     }
 
     #[Route('/sentence/{id}', name: 'app_sentence_show')]
-    public function show($id, SentenceRepository $sentenceRepo): Response
+    public function show($id, SentenceRepository $sentence): Response
     {
     
         return $this->render('sentence/show.html.twig', [
-            'sentence' => $sentenceRepo->find($id)
+            'sentence' => $sentence->find($id)
+        ]);
+    }
+
+    #[Route('/sentence/{id}/like', name: 'app_sentence_like', methods: ['POST'])]
+    public function like(Sentence $sentence, EntityManagerInterface $entityManager): Response
+    {
+        $sentence->setLikes($sentence->getLikes() + 1);
+
+        $entityManager->flush();
+
+        return $this->redirectToRoute('app_sentence_show', [
+            'id' => $sentence->getId(),
         ]);
     }
 }
+
