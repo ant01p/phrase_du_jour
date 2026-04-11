@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Enregistrement{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1 class="mb-4">Enregistrement</h1>
+
+    {{ form_start(registrationForm) }}
+
+        {{ form_errors(registrationForm) }}
+
+        <div class=" mb-3">
+            {{ form_label(registrationForm.username, 'Pseudonyme', {
+                label_attr: {'class': 'form-label'}
+            }) }}
+            {{ form_widget(registrationForm.username, {
+                attr: {
+                    'class': 'form-control',
+                }
+            }) }}
+            {{ form_errors(registrationForm.username) }}
+        </div>
+
+        <div class="mb-3">
+            {{ form_label(registrationForm.plainPassword, 'Mot de passe', {
+                label_attr: {'class': 'form-label'}
+            }) }}
+            {{ form_widget(registrationForm.plainPassword, {
+                attr: {
+                    'class': 'form-control',
+                }
+            }) }}
+            {{ form_errors(registrationForm.plainPassword) }}
+        </div>
+
+        <button type="submit" class="btn btn-secondary">S'enregistrer</button>
+
+    {{ form_end(registrationForm) }}
+</div>
+{% endblock %}
