@@ -7,6 +7,7 @@ use App\Entity\Sentence;
 use App\Repository\SentenceRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 
 final class SentenceController extends AbstractController
@@ -32,8 +33,12 @@ final class SentenceController extends AbstractController
     }
 
     #[Route('/sentence/{id}/like', name: 'app_sentence_like', methods: ['POST'])]
-    public function like(Sentence $sentence, EntityManagerInterface $entityManager): Response
+    public function like(Sentence $sentence, Request $request, EntityManagerInterface $entityManager): Response
     {
+        if (!$this->isCsrfTokenValid('like' . $sentence->getId(), $request->request->get('_token'))) {
+            throw $this->createAccessDeniedException('Token CSRF invalide.');
+        }
+        
         $sentence->setLikes($sentence->getLikes() + 1);
 
         $entityManager->flush();
