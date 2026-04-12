@@ -5,6 +5,7 @@ namespace App\Controller;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Sentence;
 use App\Entity\Comment;
+use App\Form\CommentType;
 use App\Repository\SentenceRepository;
 use App\Repository\CommentRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -26,7 +27,7 @@ final class SentenceController extends AbstractController
     }
 
     #[Route('/sentence/{id}', name: 'app_sentence_show')]
-    public function show($id, SentenceRepository $sentenceRepo, CommentRepository $commentRepo): Response
+    public function show($id, SentenceRepository $sentenceRepo, CommentRepository $commentRepo, Request $request, EntityManagerInterface $entityManager): Response
     {
         $sentence = $sentenceRepo->find($id);
 
@@ -35,11 +36,30 @@ final class SentenceController extends AbstractController
             ['createdAt' => 'DESC']
         );
 
+        $comment = new Comment();
+        $commentForm = null;
+
+        if ($this->getUser()) {
+            $form = $this->createForm(CommentType::class, $comment);
+            $form->handleRequest($request);
+            $commentForm = $form;
+
+            if ($form->isSubmitted() && $form->isValid()) {
+                $comment->setSentence($sentence);
+                $comment->setCreatedAt(new \DateTimeImmutable());
+                $comment->setAuthor($this->getUser());
+                $entityManager->persist($comment);
+                $entityManager->flush();
+
+                return $this->redirectToRoute('app_sentence_show', ['id' => $sentence->getId()]);
+            }
+        }
+
         return $this->render('sentence/show.html.twig', [
             'sentence' => $sentence,
-            'comments' => $comments
+            'comments' => $comments,
+            'commentForm' => $commentForm ? $commentForm->createView() : null,
         ]);
-        
     }
 
     #[Route('/sentence/{id}/like', name: 'app_sentence_like', methods: ['POST'])]
