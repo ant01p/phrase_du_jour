@@ -4,7 +4,9 @@ namespace App\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Sentence;
+use App\Entity\Comment;
 use App\Repository\SentenceRepository;
+use App\Repository\CommentRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,12 +26,20 @@ final class SentenceController extends AbstractController
     }
 
     #[Route('/sentence/{id}', name: 'app_sentence_show')]
-    public function show($id, SentenceRepository $sentence): Response
+    public function show($id, SentenceRepository $sentenceRepo, CommentRepository $commentRepo): Response
     {
-    
+        $sentence = $sentenceRepo->find($id);
+
+        $comments = $commentRepo->findBy(
+            ['sentence' => $sentence],
+            ['createdAt' => 'DESC']
+        );
+
         return $this->render('sentence/show.html.twig', [
-            'sentence' => $sentence->find($id)
+            'sentence' => $sentence,
+            'comments' => $comments
         ]);
+        
     }
 
     #[Route('/sentence/{id}/like', name: 'app_sentence_like', methods: ['POST'])]
@@ -47,5 +57,6 @@ final class SentenceController extends AbstractController
             'id' => $sentence->getId(),
         ]);
     }
+
 }
 

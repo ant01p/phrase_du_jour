@@ -8,7 +8,7 @@
     <h2 class="text-center fw-bold mb-4">La phrase du jour</h2>
 
     <div class="row justify-content-center">
-        <div class="col-md-8">
+        <div class="col-md-12">
 
             <div class="card border-dark">
                 <div class="card-header bg-{{ sentence.category.color }} text-end">
@@ -36,7 +36,23 @@
                 </div>
             </div>
 
+            <h2 class="py-3">Commentaires</h2>
+
+            {% if comments is empty %}
+                <p>Aucun commentaire pour le moment.</p>
+            {% else %}
+            {% for comment in comments %}
+                <div class="mb-3">
+                    <strong>{{ comment.author.username }}</strong>
+                    <small class="text-body-secondary">
+                        (le {{ comment.createdAt|date('d/m/Y à H:i:s') }}) :
+                    </small>
+                    <div>{{ comment.content }}</div>
+                </div>
+            {% endfor %}
+            {% endif %}
         </div>
+        
     </div>
 
 </div>
