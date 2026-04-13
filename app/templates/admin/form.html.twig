@@ -3,7 +3,15 @@
 {% block title %}Ajouter une phrase du jour{% endblock %}
 
 {% block body %}
-    <h1 class="mb-4">Ajouter une phrase du jour</h1>
+
+       
+    <h1 class="mb-4">
+        {% if isEdit %}
+            Modifier une phrase du jour
+        {% else %}
+            Ajouter une phrase du jour
+        {% endif %}
+    </h1>
 
     {{ form_start(sentenceForm) }}
 

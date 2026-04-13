@@ -24,7 +24,7 @@ final class AdminController extends AbstractController
         ]);
     }
 
-     #[Route('/admin/add', name: 'app_admin_add')]
+    #[Route('/admin/add', name: 'app_admin_add')]
     public function add(Request $request, EntityManagerInterface $entityManager): Response
     {
         $sentence = new Sentence();
@@ -43,9 +43,41 @@ final class AdminController extends AbstractController
             return $this->redirectToRoute('app_admin');
         }
 
-        return $this->render('admin/add.html.twig', [
-            'sentenceForm' => $sentenceForm,
+        return $this->render('admin/form.html.twig', [
+            'sentenceForm' => $sentenceForm->createView(),
+            'isEdit' => false,
         ]);
+    }
+
+    #[Route('/admin/edit/{id}', name: 'app_admin_edit')]
+    public function edit(Sentence $sentence, Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $sentenceForm = $this->createForm(SentenceType::class, $sentence);
+        $sentenceForm->handleRequest($request);
+
+        if ($sentenceForm->isSubmitted() && $sentenceForm->isValid()) {
+            $entityManager->flush();
+
+            $this->addFlash('success', 'La phrase du jour a bien été modifiée.');
+
+            return $this->redirectToRoute('app_admin');
+        }
+
+        return $this->render('admin/form.html.twig', [
+            'sentenceForm' => $sentenceForm->createView(),
+            'isEdit' => true,
+        ]);
+    }
+    
+    #[Route('/admin/delete/{id}', name: 'app_admin_delete')]
+    public function delete(Sentence $sentence, EntityManagerInterface $entityManager): Response
+    {
+        $entityManager->remove($sentence);
+        $entityManager->flush();
+
+        $this->addFlash('success', 'La phrase du jour a bien été supprimée.');
+
+        return $this->redirectToRoute('app_admin');
     }
 
 }

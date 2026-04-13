@@ -38,8 +38,8 @@
                                 {{ sentence.category.name }}
                             </span>
                         </td>
-                        <td><a href="" class="text-decoration-none">✏️</a></td>
-                        <td><a href="" class="text-decoration-none">❌</a></td>
+                        <td><a href="{{ path('app_admin_edit', {id: sentence.id}) }}" class="text-decoration-none">✏️</a></td>
+                        <td><a href="{{ path('app_admin_delete', {id: sentence.id}) }}" class="text-decoration-none">❌</a></td>
                     </tr>
                 {% else %}
                     <tr>
