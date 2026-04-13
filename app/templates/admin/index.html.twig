@@ -12,8 +12,14 @@
 
         <h1 class="text-center fw-bold mb-4">Espace Administration</h1>
 
-        
-        <p>Ajouter une phrase du jour<a href="#" class="text-decoration-none"> ➕</a> </p>
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success d-flex justify-content-between align-items-center" role="alert">
+                <span class="me-3">{{ message }}</span>
+                <button type="button" class="btn-close text-end" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+
+        <p>Ajouter une phrase du jour<a href="{{ path('app_admin_add') }}" class="text-decoration-none"> ➕</a> </p>
         
         <table class="table table-hover">
             <tbody>

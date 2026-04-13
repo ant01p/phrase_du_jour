@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ajouter une phrase du jour{% endblock %}
+
+{% block body %}
+    <h1 class="mb-4">Ajouter une phrase du jour</h1>
+
+    {{ form_start(sentenceForm) }}
+
+        <div class="mb-1">
+            {{ form_label(sentenceForm.content) }}
+            {{ form_widget(sentenceForm.content, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(sentenceForm.content) }}
+        </div>
+
+        <div class="mb-3">
+            {{ form_label(sentenceForm.category) }}
+            {{ form_widget(sentenceForm.category) }}
+            {{ form_errors(sentenceForm.category) }}
+        </div>
+
+        <button type="submit" class="btn btn-primary">
+            Ajouter
+        </button>
+
+    {{ form_end(sentenceForm) }}
+
+{% endblock %}
