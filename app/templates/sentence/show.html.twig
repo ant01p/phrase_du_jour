@@ -27,10 +27,16 @@
                     </div>
 
                     <div class="card-footer bg-{{ sentence.category.color }} text-end py-1">
-                        <a href="{{ path('app_sentence_like', {id: sentence.id, token_csrf: csrf_token('like-sentence' ~ sentence.id)}) }}" 
-                            class="btn btn-link p-0 text-decoration-none fw-bold text-body px-1">
-                            👍🏻{{ sentence.likes }}
-                        </a>
+                        {% if app.user %}
+                            <a href="{{ path('app_sentence_like', {id: sentence.id, token_csrf: csrf_token('like-sentence' ~ sentence.id)}) }}" 
+                                class="btn btn-link p-0 text-decoration-none fw-bold text-body px-1">
+                                👍🏻{{ sentence.likes }}
+                            </a>
+                        {% else %}
+                            <span class="fw-bold text-body px-1">
+                                👍🏻 {{ sentence.likes }}
+                            </span>
+                        {% endif %}
                     </div>
                 </div>
 

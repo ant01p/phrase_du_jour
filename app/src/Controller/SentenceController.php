@@ -3,10 +3,12 @@
 namespace App\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
+use App\Entity\Like;
 use App\Entity\Sentence;
 use App\Form\CommentType;
 use App\Repository\SentenceRepository;
 use App\Repository\CommentRepository;
+use App\Repository\LikeRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
@@ -55,20 +57,41 @@ final class SentenceController extends AbstractController
     }
 
     #[Route('/sentence/{id}/like', name: 'app_sentence_like')]
-    public function like(Sentence $sentence, Request $request, EntityManagerInterface $entityManager): Response
-    {
-        if (!$this->isCsrfTokenValid('like' . $sentence->getId(), $request->request->get('token'))) {
-            throw $this->createAccessDeniedException('Token CSRF invalide.');
-        }
-        
-        $sentence->setLikes($sentence->getLikes() + 1);
-
-        $entityManager->flush();
-
-        return $this->redirectToRoute('app_sentence_show', [
-            'id' => $sentence->getId(),
-        ]);
+public function like(Sentence $sentence, LikeRepository $likeRepo, Request $request, EntityManagerInterface $entityManager): Response
+{
+    if (!$this->getUser()) {
+        throw $this->createAccessDeniedException('Vous devez être connecté pour aimer une phrase.');
     }
+
+    $token = $request->query->get('token_csrf');
+
+    if (!$this->isCsrfTokenValid('like-sentence' . $sentence->getId(), $token)) {
+        throw $this->createAccessDeniedException('Token CSRF invalide.');
+    }
+
+    $user = $this->getUser();
+
+    $isLiked = $likeRepo->findOneBy([
+        'user' => $user,
+        'sentence' => $sentence
+    ]);
+
+    if ($isLiked) {
+        $entityManager->remove($isLiked);
+    } else {
+        $like = new Like();
+        $like->setUser($user);
+        $like->setSentence($sentence);
+
+        $entityManager->persist($like);
+    }
+
+    $entityManager->flush();
+
+    return $this->redirectToRoute('app_sentence_show', [
+        'id' => $sentence->getId(),
+    ]);
+}
 
 }
 

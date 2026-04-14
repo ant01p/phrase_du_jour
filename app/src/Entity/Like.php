@@ -6,7 +6,10 @@ use App\Repository\LikeRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: LikeRepository::class)]
-#[ORM\Table(name: '`like`')]
+#[ORM\Table(name: '`like`', uniqueConstraints: [
+    new ORM\UniqueConstraint(name: 'unique_like', columns: ['user_id', 'sentence_id'])
+])]
+
 class Like
 {
     #[ORM\Id]
