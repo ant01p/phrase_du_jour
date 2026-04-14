@@ -70,12 +70,19 @@ final class AdminController extends AbstractController
     }
     
     #[Route('/admin/delete/{id}', name: 'app_admin_delete')]
-    public function delete(Sentence $sentence, EntityManagerInterface $entityManager): Response
+    public function delete(Sentence $sentence, EntityManagerInterface $entityManager, Request $request): Response
     {
+         
+
+        $csrf = $request->query->get('token_csrf');
+
+        if ($this->isCsrfTokenValid('delete_item' . $sentence->getId(), $token)) {
+
         $entityManager->remove($sentence);
         $entityManager->flush();
 
         $this->addFlash('success', 'La phrase du jour a bien été supprimée.');
+        }
 
         return $this->redirectToRoute('app_admin');
     }

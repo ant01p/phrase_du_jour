@@ -27,12 +27,10 @@
                     </div>
 
                     <div class="card-footer bg-{{ sentence.category.color }} text-end py-1">
-                        <form method="post" action="{{ path('app_sentence_like', {id: sentence.id}) }}">
-                            <input type="hidden" name="_token" value="{{ csrf_token('like' ~ sentence.id) }}">
-                            <button type="submit" class="btn btn-link p-0 text-decoration-none fw-bold text-body px-1">
-                                👍🏻{{ sentence.likes }}
-                            </button>
-                        </form>
+                        <a href="{{ path('app_sentence_like', {id: sentence.id, token_csrf: csrf_token('like-sentence' ~ sentence.id)}) }}" 
+                            class="btn btn-link p-0 text-decoration-none fw-bold text-body px-1">
+                            👍🏻{{ sentence.likes }}
+                        </a>
                     </div>
                 </div>
 

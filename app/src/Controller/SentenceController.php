@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Sentence;
-use App\Entity\Comment;
 use App\Form\CommentType;
 use App\Repository\SentenceRepository;
 use App\Repository\CommentRepository;
@@ -16,38 +15,31 @@ use Symfony\Component\Routing\Attribute\Route;
 final class SentenceController extends AbstractController
 {
     #[Route('/', name: 'app_home')]
-    public function index(SentenceRepository $sentences): Response
+    public function index(EntityManagerInterface $entityManager): Response
     {
-        $sentences = $sentences->findBy([], ['createdAt' => 'DESC']);
-        
         return $this->render('home/index.html.twig', [
-            'controller_name' => 'SentenceController',
-            'sentences' => $sentences,
+            'sentences' => $entityManager->getRepository(Sentence::class)->findBy([], ['createdAt' => 'DESC'])
         ]);
     }
 
     #[Route('/sentence/{id}', name: 'app_sentence_show')]
-    public function show($id, SentenceRepository $sentenceRepo, CommentRepository $commentRepo, Request $request, EntityManagerInterface $entityManager): Response
+    public function show(Sentence $sentence, CommentRepository $commentRepo, Request $request, EntityManagerInterface $entityManager): Response
     {
-        $sentence = $sentenceRepo->find($id);
-
         $comments = $commentRepo->findBy(
             ['sentence' => $sentence],
             ['createdAt' => 'DESC']
         );
 
-        $comment = new Comment();
-        $commentForm = null;
-
         if ($this->getUser()) {
-            $form = $this->createForm(CommentType::class, $comment);
+            $form = $this->createForm(CommentType::class);
             $form->handleRequest($request);
-            $commentForm = $form;
 
             if ($form->isSubmitted() && $form->isValid()) {
-                $comment->setSentence($sentence);
+                $comment = $form->getData();
                 $comment->setCreatedAt(new \DateTimeImmutable());
                 $comment->setAuthor($this->getUser());
+                $comment->setSentence($sentence);
+
                 $entityManager->persist($comment);
                 $entityManager->flush();
 
@@ -58,14 +50,14 @@ final class SentenceController extends AbstractController
         return $this->render('sentence/show.html.twig', [
             'sentence' => $sentence,
             'comments' => $comments,
-            'commentForm' => $commentForm ? $commentForm->createView() : null,
+            'commentForm' => isset($form) ? $form->createView() : null,
         ]);
     }
 
-    #[Route('/sentence/{id}/like', name: 'app_sentence_like', methods: ['POST'])]
+    #[Route('/sentence/{id}/like', name: 'app_sentence_like')]
     public function like(Sentence $sentence, Request $request, EntityManagerInterface $entityManager): Response
     {
-        if (!$this->isCsrfTokenValid('like' . $sentence->getId(), $request->request->get('_token'))) {
+        if (!$this->isCsrfTokenValid('like' . $sentence->getId(), $request->request->get('token'))) {
             throw $this->createAccessDeniedException('Token CSRF invalide.');
         }
         
